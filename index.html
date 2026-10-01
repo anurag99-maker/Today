@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ne" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AushadhiMatch | औषधी म्याच - Easy Medicine Guide for Nepal</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Google Fonts: Mukta for Devanagari & Inter for English -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#16a34a',
+              600: '#15803d',
+              700: '#166534',
+              800: '#166534',
+              900: '#14532d',
+            }
+          },
+          fontFamily: {
+            sans: ['Mukta', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-size: 20px; /* Senior-friendly base text size */
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .elder-btn {
+      min-height: 64px;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .high-contrast-card {
+      border: 3px solid #cbd5e1;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+    @keyframes scanLine {
+      0% { top: 0%; }
+      50% { top: 95%; }
+      100% { top: 0%; }
+    }
+    .scanner-laser {
+      animation: scanLine 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- TOP ACCESSIBILITY HEADER -->
+  <header class="bg-brand-700 text-white sticky top-0 z-50 shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-white text-brand-700 p-2.5 rounded-2xl shadow-md flex items-center justify-center w-14 h-14">
+          <i class="fa-solid fa-pills text-3xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold leading-tight">
+            <span id="brandName">औषधी म्याच</span>
+          </h1>
+          <p class="text-xs md:text-sm text-brand-100 font-semibold" id="brandSubtitle">
+            नेपालका ज्येष्ठ नागरिकका लागि सजिलो औषधी जानकारी
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center space-x-2">
+        <button onclick="speakPageInfo()" aria-label="Read Aloud" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-extrabold px-3 py-2.5 rounded-2xl flex items-center space-x-2 text-base shadow transition">
+          <i class="fa-solid fa-volume-high text-xl"></i>
+          <span class="hidden sm:inline" id="btnListen">सुन्नुहोस्</span>
+        </button>
+
+        <button onclick="toggleLanguage()" class="bg-white text-brand-700 font-extrabold px-4 py-2.5 rounded-2xl text-base shadow hover:bg-slate-100 transition border-2 border-brand-500">
+          <span id="langLabel">English</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+
+    <!-- HERO / SCANNER SECTION -->
+    <section class="bg-white rounded-3xl p-6 md:p-8 high-contrast-card text-center space-y-6">
+      
+      <div class="space-y-2">
+        <span class="bg-brand-100 text-brand-800 text-sm font-extrabold px-4 py-1.5 rounded-full uppercase tracking-wide inline-block" id="heroBadge">
+          <i class="fa-solid fa-check-double mr-1"></i> सजिलो र नि:शुल्क
+        </span>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900" id="heroTitle">
+          औषधीको फोटो खिच्नुहोस् वा नाम खोज्नुहोस्
+        </h2>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto" id="heroDesc">
+          औषधीको प्रयोग, मात्रा (डोज), र सस्तो विकल्प तुरुन्तै नेपाली वा अंग्रेजीमा थाहा पाउनुहोस्।
+        </p>
+      </div>
+
+      <!-- MAIN SCAN & UPLOAD BUTTONS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto pt-2">
+        <button onclick="openCameraModal()" class="elder-btn bg-brand-600 hover:bg-brand-700 text-white rounded-2xl flex items-center justify-center space-x-3 shadow-lg transition transform active:scale-95">
+          <i class="fa-solid fa-camera text-3xl"></i>
+          <span id="btnCamera">फोटो खिच्नुहोस् (Scan Photo)</span>
+        </button>
+
+        <label for="fileUpload" class="elder-btn bg-sky-600 hover:bg-sky-700 text-white rounded-2xl flex items-center justify-center space-x-3 shadow-lg transition cursor-pointer transform active:scale-95">
+          <i class="fa-solid fa-image text-3xl"></i>
+          <span id="btnUpload">ग्यालरीबाट छान्नुहोस् (Upload)</span>
+          <input type="file" id="fileUpload" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+        </label>
+      </div>
+
+      <!-- SEARCH BAR -->
+      <div class="pt-4 border-t border-slate-200 max-w-2xl mx-auto">
+        <label for="searchInput" class="block text-left text-base font-bold text-slate-700 mb-2" id="searchLabel">
+          वा औषधीको नाम टाइप गर्नुहोस्:
+        </label>
+        <div class="flex space-x-2">
+          <div class="relative flex-grow">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 text-xl"></i>
+            <input type="text" id="searchInput" placeholder="उदा: Cetam, Pantocid, Amlodipine..." class="w-full pl-12 pr-4 py-4 border-2 border-slate-300 rounded-2xl text-xl focus:border-brand-500 outline-none">
+          </div>
+          <button onclick="searchByName()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 rounded-2xl text-xl">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PRESET SAMPLE BUTTONS -->
+      <div class="pt-2">
+        <p class="text-sm font-bold text-slate-500 mb-2" id="quickTestLabel">नमूना औषधी थिचेर हेर्नुहोस्:</p>
+        <div class="flex flex-wrap justify-center gap-2">
+          <button onclick="loadMedicine('cetam')" class="bg-slate-100 hover:bg-brand-100 text-slate-800 font-bold px-4 py-2 rounded-xl text-base border border-slate-300">
+            <i class="fa-solid fa-tablets mr-1 text-brand-600"></i> Cetam (Paracetamol)
+          </button>
+          <button onclick="loadMedicine('pantocid')" class="bg-slate-100 hover:bg-brand-100 text-slate-800 font-bold px-4 py-2 rounded-xl text-base border border-slate-300">
+            <i class="fa-solid fa-capsules mr-1 text-brand-600"></i> Pantocid (Pantoprazole)
+          </button>
+          <button onclick="loadMedicine('amlodipine')" class="bg-slate-100 hover:bg-brand-100 text-slate-800 font-bold px-4 py-2 rounded-xl text-base border border-slate-300">
+            <i class="fa-solid fa-heart-pulse mr-1 text-brand-600"></i> Amlodipine 5mg
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <section id="resultsSection" class="hidden bg-white rounded-3xl p-6 md:p-8 high-contrast-card space-y-6">
+      
+      <!-- Result Header -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-4 border-b-2 border-slate-200 gap-4">
+        <div>
+          <span class="bg-brand-100 text-brand-800 text-sm font-bold px-3 py-1 rounded-full" id="resVerifiedBadge">
+            <i class="fa-solid fa-shield-halved mr-1"></i> DDA नेपाल स्वीकृत
+          </span>
+          <h3 id="resMedicineName" class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-1">Cetam 500mg</h3>
+          <p id="resGenericName" class="text-lg font-bold text-slate-600">Generic: Paracetamol</p>
+        </div>
+        
+        <button onclick="speakMedicineDetails()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-extrabold px-5 py-3 rounded-2xl flex items-center space-x-2 text-lg shadow">
+          <i class="fa-solid fa-volume-high text-xl"></i>
+          <span id="btnReadDetail">यसको बारेमा सुन्नुहोस्</span>
+        </button>
+      </div>
+
+      <!-- Core Details Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Purpose -->
+        <div class="bg-sky-50 border-2 border-sky-200 p-5 rounded-2xl space-y-2">
+          <div class="flex items-center space-x-2 text-sky-800 font-extrabold text-xl">
+            <i class="fa-solid fa-circle-info text-2xl"></i>
+            <h4 id="headPurpose">के को लागि प्रयोग हुन्छ?</h4>
+          </div>
+          <p id="resPurpose" class="text-xl text-slate-800 font-semibold leading-relaxed"></p>
+        </div>
+
+        <!-- Dosage -->
+        <div class="bg-emerald-50 border-2 border-emerald-200 p-5 rounded-2xl space-y-2">
+          <div class="flex items-center space-x-2 text-emerald-800 font-extrabold text-xl">
+            <i class="fa-solid fa-glass-water text-2xl"></i>
+            <h4 id="headDosage">कसरी खाने?</h4>
+          </div>
+          <p id="resDosage" class="text-xl text-slate-800 font-semibold leading-relaxed"></p>
+        </div>
+
+      </div>
+
+      <!-- Daily Schedule Tracker -->
+      <div class="bg-slate-50 border-2 border-slate-200 p-5 rounded-2xl space-y-3">
+        <h4 class="font-extrabold text-xl text-slate-800 flex items-center space-x-2" id="headSchedule">
+          <i class="fa-solid fa-calendar-check text-brand-600"></i>
+          <span>दैनिकी तालिका (Daily Tracker)</span>
+        </h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="bg-white p-3 rounded-xl border-2 border-slate-200 font-bold">
+            <i class="fa-solid fa-sun text-amber-500 text-3xl block mb-1"></i>
+            <span class="block text-sm text-slate-500" id="labelMorning">बिहान (Morning)</span>
+            <span class="text-xl font-extrabold text-brand-600" id="valMorning">१ चक्की</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border-2 border-slate-200 font-bold">
+            <i class="fa-solid fa-cloud-sun text-orange-400 text-3xl block mb-1"></i>
+            <span class="block text-sm text-slate-500" id="labelAfternoon">दिउँसो (Afternoon)</span>
+            <span class="text-xl font-extrabold text-slate-400" id="valAfternoon">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border-2 border-slate-200 font-bold">
+            <i class="fa-solid fa-sun-plant-wilt text-amber-600 text-3xl block mb-1"></i>
+            <span class="block text-sm text-slate-500" id="labelEvening">साँझ (Evening)</span>
+            <span class="text-xl font-extrabold text-slate-400" id="valEvening">-</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border-2 border-slate-200 font-bold">
+            <div class="text-indigo-500 text-3xl block mb-1"><i class="fa-solid fa-moon"></i></div>
+            <span class="block text-sm text-slate-500" id="labelNight">राति (Night)</span>
+            <span class="text-xl font-extrabold text-brand-600" id="valNight">१ चक्की</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generic Price Comparison -->
+      <div class="bg-amber-50 border-2 border-amber-300 p-5 rounded-2xl space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2 text-amber-900 font-extrabold text-xl">
+            <i class="fa-solid fa-piggy-bank text-amber-600 text-3xl"></i>
+            <h4 id="headSavings">पैसा बचत गर्ने सस्तो विकल्प</h4>
+          </div>
+          <span id="resSavingsPercent" class="bg-green-600 text-white text-sm font-extrabold px-3 py-1 rounded-full"></span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div class="bg-white p-4 rounded-xl border border-amber-200">
+            <span class="text-sm text-slate-500 font-bold" id="labelCurrentBrand">तपाईंको ब्रान्ड:</span>
+            <p id="resCurrentPrice" class="text-2xl font-extrabold text-slate-900"></p>
+          </div>
+          <div class="bg-white p-4 rounded-xl border-2 border-green-500">
+            <span class="text-sm text-green-700 font-bold" id="labelGenericAlternative">सस्तो विकल्प:</span>
+            <p id="resGenericPrice" class="text-2xl font-extrabold text-green-600"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warnings -->
+      <div class="bg-red-50 border-2 border-red-200 p-5 rounded-2xl space-y-2">
+        <div class="flex items-center space-x-2 text-red-800 font-extrabold text-xl">
+          <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+          <h4 id="headWarning">सावधानी र सावधानीका कुराहरु</h4>
+        </div>
+        <p id="resWarning" class="text-lg text-red-900 font-semibold"></p>
+      </div>
+
+    </section>
+
+    <!-- NEW FEATURE: PILL VISUAL IDENTIFIER WIZARD -->
+    <section class="bg-white rounded-3xl p-6 md:p-8 high-contrast-card space-y-4">
+      <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+        <i class="fa-solid fa-eye text-brand-600 text-3xl"></i>
+        <div>
+          <h3 class="text-2xl font-extrabold text-slate-900" id="pillWizardTitle">औषधीको रुप र रङबाट पहिचान गर्नुहोस्</h3>
+          <p class="text-sm text-slate-600" id="pillWizardSub">औषधीको आकार र रङ छानेर औषधी पत्ता लगाउनुहोस्</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+        <!-- Shape Filter -->
+        <div class="space-y-1">
+          <label class="text-sm font-bold text-slate-700 block" id="labelPillShape">आकार (Shape):</label>
+          <select id="pillShape" class="w-full p-3 border-2 border-slate-300 rounded-xl bg-slate-50 font-bold text-base outline-none focus:border-brand-500">
+            <option value="round">गोलो (Round)</option>
+            <option value="oval">लाम्चो (Oval)</option>
+            <option value="capsule">क्याप्सुल (Capsule)</option>
+          </select>
+        </div>
+
+        <!-- Color Filter -->
+        <div class="space-y-1">
+          <label class="text-sm font-bold text-slate-700 block" id="labelPillColor">रङ (Color):</label>
+          <select id="pillColor" class="w-full p-3 border-2 border-slate-300 rounded-xl bg-slate-50 font-bold text-base outline-none focus:border-brand-500">
+            <option value="white">सेतो (White)</option>
+            <option value="yellow">पहेंलो (Yellow)</option>
+            <option value="blue">नीलो (Blue)</option>
+            <option value="red">रातो (Red)</option>
+          </select>
+        </div>
+
+        <!-- Filter Trigger -->
+        <div class="flex items-end">
+          <button onclick="identifyPill()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-filter"></i>
+            <span id="btnIdentifyPill">पहिचान गर्नुहोस्</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW FEATURE: NEARBY PHARMACY FINDER -->
+    <section class="bg-white rounded-3xl p-6 md:p-8 high-contrast-card space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-map-location-dot text-brand-600 text-3xl"></i>
+          <h3 class="text-2xl font-extrabold text-slate-900" id="pharmacySectionTitle">नजिकैको औषधि पसल (Pharmacies)</h3>
+        </div>
+        <select id="cityFilter" onchange="filterPharmacies()" class="p-2 border-2 border-slate-300 rounded-xl font-bold text-sm bg-slate-50">
+          <option value="kathmandu">काठमाडौँ (Kathmandu)</option>
+          <option value="lalitpur">ललितपुर (Lalitpur)</option>
+          <option value="pokhara">पोखरा (Pokhara)</option>
+          <option value="bharatpur">भरतपुर (Bharatpur)</option>
+        </select>
+      </div>
+
+      <div id="pharmacyList" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <!-- Dynamically rendered pharmacies -->
+      </div>
+    </section>
+
+    <!-- EMERGENCY HELPLINE BAR -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <a href="tel:102" class="bg-red-600 hover:bg-red-700 text-white p-5 rounded-3xl high-contrast-card flex items-center justify-between transition">
+        <div class="space-y-1">
+          <span class="text-xs font-bold uppercase tracking-wide opacity-90" id="labelEmergency">आपतकालीन</span>
+          <h3 class="text-xl font-extrabold" id="btnAmbulance">एम्बुलेन्स (१०२)</h3>
+        </div>
+        <div class="bg-white text-red-600 p-3.5 rounded-2xl text-xl font-black">
+          <i class="fa-solid fa-truck-medical"></i>
+        </div>
+      </a>
+
+      <a href="tel:100" class="bg-slate-800 hover:bg-slate-900 text-white p-5 rounded-3xl high-contrast-card flex items-center justify-between transition">
+        <div class="space-y-1">
+          <span class="text-xs font-bold uppercase tracking-wide opacity-90" id="labelPolice">प्रहरी</span>
+          <h3 class="text-xl font-extrabold" id="btnPolice">प्रहरी सेवा (१००)</h3>
+        </div>
+        <div class="bg-slate-700 text-sky-400 p-3.5 rounded-2xl text-xl">
+          <i class="fa-solid fa-shield-cat"></i>
+        </div>
+      </a>
+
+      <a href="tel:1144" class="bg-emerald-700 hover:bg-emerald-800 text-white p-5 rounded-3xl high-contrast-card flex items-center justify-between transition">
+        <div class="space-y-1">
+          <span class="text-xs font-bold uppercase tracking-wide opacity-90" id="labelSeniorHelpline">ज्येष्ठ नागरिक सेवा</span>
+          <h3 class="text-xl font-extrabold" id="btnSeniorHelpline">हेल्पलाइन (११४४)</h3>
+        </div>
+        <div class="bg-white text-emerald-800 p-3.5 rounded-2xl text-xl font-black">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+      </a>
+
+    </section>
+
+  </main>
+
+  <!-- CAMERA MODAL -->
+  <div id="cameraModal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-6 text-center relative">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-2xl font-extrabold text-slate-900" id="modalCamTitle">औषधी स्क्यान गर्नुहोस्</h3>
+        <button onclick="closeCameraModal()" class="text-slate-400 hover:text-slate-800 text-2xl font-bold px-2">✕</button>
+      </div>
+
+      <!-- Live Video Stream / Visual Scan Box -->
+      <div class="relative bg-slate-950 rounded-2xl overflow-hidden h-64 flex items-center justify-center border-4 border-brand-500">
+        <video id="webcamVideo" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+        
+        <div id="camFallbackUI" class="flex flex-col items-center justify-center space-y-2">
+          <i class="fa-solid fa-pills text-6xl text-slate-700 animate-pulse"></i>
+          <span class="text-xs text-slate-300 bg-slate-900/80 px-3 py-1 rounded-full" id="camInstruction">
+            औषधीको बट्टा वा पत्ता क्यामेराको अगाडि राख्नुहोस्
+          </span>
+        </div>
+
+        <div class="absolute inset-x-0 h-1 bg-green-400 scanner-laser shadow-lg shadow-green-400"></div>
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-sm text-slate-600 font-bold" id="camSimNotice">स्क्यान प्रक्रियाको परीक्षण गर्न तलको औषधी छान्नुहोस्:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="simulateScan('cetam')" class="bg-brand-100 hover:bg-brand-200 text-brand-800 font-bold p-3 rounded-xl border border-brand-300 text-base">
+            Cetam 500mg
+          </button>
+          <button onclick="simulateScan('pantocid')" class="bg-brand-100 hover:bg-brand-200 text-brand-800 font-bold p-3 rounded-xl border border-brand-300 text-base">
+            Pantocid 40mg
+          </button>
+        </div>
+      </div>
+
+      <button onclick="closeCameraModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 rounded-xl">
+        रद्द गर्नुहोस् (Cancel)
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-center py-6 mt-10 border-t-4 border-brand-600">
+    <div class="max-w-4xl mx-auto px-4 space-y-2">
+      <p class="text-lg font-bold text-slate-200" id="footerText">
+        औषधी म्याच (AushadhiMatch) — ज्येष्ठ नागरिकका लागि निर्मित डिजिटल स्वास्थ्य सेवा
+      </p>
+      <p class="text-xs text-slate-500" id="footerDisclaimer">
+        अस्वीकरण: यो प्लेटफर्म जानकारीको लागि मात्र हो। औषधी सेवन गर्नु अघि सधैं डाक्टर वा फर्मासिस्टको सल्लाह लिनुहोस्।
+      </p>
+    </div>
+  </footer>
+
+  <!-- INTEGRATED JAVASCRIPT LOGIC -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. LANGUAGE TRANSLATIONS
+    // -------------------------------------------------------------
+    let currentLang = 'ne';
+
+    const translations = {
+      ne: {
+        brandName: "औषधी म्याच",
+        brandSubtitle: "नेपालका ज्येष्ठ नागरिकका लागि सजिलो औषधी जानकारी",
+        btnListen: "सुन्नुहोस्",
+        heroBadge: "सजिलो र नि:शुल्क",
+        heroTitle: "औषधीको फोटो खिच्नुहोस् वा नाम खोज्नुहोस्",
+        heroDesc: "औषधीको प्रयोग, मात्रा (डोज), र सस्तो विकल्प तुरुन्तै नेपाली वा अंग्रेजीमा थाहा पाउनुहोस्।",
+        btnCamera: "फोटो खिच्नुहोस् (Scan Photo)",
+        btnUpload: "ग्यालरीबाट छान्नुहोस् (Upload)",
+        searchLabel: "वा औषधीको नाम टाइप गर्नुहोस्:",
+        quickTestLabel: "नमूना औषधी थिचेर हेर्नुहोस्:",
+        resVerifiedBadge: "DDA नेपाल स्वीकृत",
+        btnReadDetail: "यसको बारेमा सुन्नुहोस्",
+        headPurpose: "के को लागि प्रयोग हुन्छ?",
+        headDosage: "कसरी खाने?",
+        headSchedule: "दैनिकी तालिका (Daily Tracker)",
+        labelMorning: "बिहान (Morning)",
+        labelAfternoon: "दिउँसो (Afternoon)",
+        labelEvening: "साँझ (Evening)",
+        labelNight: "राति (Night)",
+        headSavings: "पैसा बचत गर्ने सस्तो विकल्प",
+        labelCurrentBrand: "तपाईंको ब्रान्ड:",
+        labelGenericAlternative: "सस्तो विकल्प:",
+        headWarning: "सावधानी र सावधानीका कुराहरु",
+        pillWizardTitle: "औषधीको रुप र रङबाट पहिचान गर्नुहोस्",
+        pillWizardSub: "औषधीको आकार र रङ छानेर औषधी पत्ता लगाउनुहोस्",
+        labelPillShape: "आकार (Shape):",
+        labelPillColor: "रङ (Color):",
+        btnIdentifyPill: "पहिचान गर्नुहोस्",
+        pharmacySectionTitle: "नजिकैको औषधि पसल (Pharmacies)",
+        labelEmergency: "आपतकालीन",
+        btnAmbulance: "एम्बुलेन्स (१०२)",
+        labelPolice: "प्रहरी",
+        btnPolice: "प्रहरी सेवा (१००)",
+        labelSeniorHelpline: "ज्येष्ठ नागरिक सेवा",
+        btnSeniorHelpline: "हेल्पलाइन (११४४)",
+        modalCamTitle: "औषधी स्क्यान गर्नुहोस्",
+        camInstruction: "औषधीको बट्टा वा पत्ता क्यामेराको अगाडि राख्नुहोस्",
+        camSimNotice: "स्क्यान प्रक्रियाको परीक्षण गर्न तलको औषधी छान्नुहोस्:",
+        footerText: "औषधी म्याच (AushadhiMatch) — ज्येष्ठ नागरिकका लागि निर्मित डिजिटल स्वास्थ्य सेवा",
+        footerDisclaimer: "अस्वीकरण: यो प्लेटफर्म जानकारीको लागि मात्र हो। औषधी सेवन गर्नु अघि सधैं डाक्टर वा फर्मासिस्टको सल्लाह लिनुहोस्।"
+      },
+      en: {
+        brandName: "AushadhiMatch",
+        brandSubtitle: "Easy Medicine Guide for Senior Citizens in Nepal",
+        btnListen: "Listen Aloud",
+        heroBadge: "Simple & Free",
+        heroTitle: "Scan Medicine Photo or Search Name",
+        heroDesc: "Instantly check medicine uses, dosage schedule, and cheaper generic matches in Nepali or English.",
+        btnCamera: "Take Photo (Scan)",
+        btnUpload: "Choose from Gallery",
+        searchLabel: "Or type medicine name:",
+        quickTestLabel: "Try sample medicine:",
+        resVerifiedBadge: "DDA Nepal Verified",
+        btnReadDetail: "Listen to Details",
+        headPurpose: "What is it used for?",
+        headDosage: "How to take this?",
+        headSchedule: "Daily Schedule Visualizer",
+        labelMorning: "Morning",
+        labelAfternoon: "Afternoon",
+        labelEvening: "Evening",
+        labelNight: "Night",
+        headSavings: "Cheaper Generic Match",
+        labelCurrentBrand: "Current Brand:",
+        labelGenericAlternative: "Generic Match:",
+        headWarning: "Safety Warnings & Cautions",
+        pillWizardTitle: "Identify Pill by Shape & Color",
+        pillWizardSub: "Filter medicines using physical visual attributes",
+        labelPillShape: "Shape:",
+        labelPillColor: "Color:",
+        btnIdentifyPill: "Find Pill",
+        pharmacySectionTitle: "Nearby Pharmacies",
+        labelEmergency: "Emergency",
+        btnAmbulance: "Ambulance (102)",
+        labelPolice: "Police",
+        btnPolice: "Police (100)",
+        labelSeniorHelpline: "Senior Helpline",
+        btnSeniorHelpline: "Helpline (1144)",
+        modalCamTitle: "Scan Medicine",
+        camInstruction: "Point your camera at the medicine strip or box",
+        camSimNotice: "Select a sample below to test scanner:",
+        footerText: "AushadhiMatch — Digital Healthcare for Nepalese Seniors",
+        footerDisclaimer: "Disclaimer: For informational purposes only. Always consult a certified doctor or pharmacist before taking medication."
+      }
+    };
+
+    // -------------------------------------------------------------
+    // 2. MEDICINE & PHARMACY DATABASE
+    // -------------------------------------------------------------
+    const medicineDB = {
+      cetam: {
+        name: "Cetam 500mg",
+        generic: "Paracetamol",
+        purpose: {
+          ne: "ज्वरो घटाउन र टाउको, दाँत वा शरीर दुखाइ कम गर्न प्रयोग गरिन्छ।",
+          en: "Used to reduce fever and relieve head, tooth, or body pain."
+        },
+        dosage: {
+          ne: "खाना खायपछि दिनको २ देखि ३ पटक १ वटा चक्की मनतातो पानीसँग खाने।",
+          en: "Take 1 tablet 2 to 3 times daily after food with warm water."
+        },
+        schedule: { morning: "१ चक्की", afternoon: "-", evening: "-", night: "१ चक्की" },
+        currentPrice: "रु ३० / १० वटा",
+        genericPrice: "Paracetamol = रु १८ / १० वटा",
+        savings: "४०% बचत (Save 40%)",
+        warning: {
+          ne: "खाली पेटमा नखानुहोस्। २४ घण्टामा ४ चक्की भन्दा बढी नखानुहोस्।",
+          en: "Do not take on an empty stomach. Do not exceed 4 tablets in 24 hours."
+        }
+      },
+      pantocid: {
+        name: "Pantocid 40mg",
+        generic: "Pantoprazole",
+        purpose: {
+          ne: "पेटमा ग्यास्ट्रिक, अमिलो पानी आउने र छाती पोल्ने समस्या रोक्न।",
+          en: "Used to treat stomach acidity, acid reflux, and heartburn."
+        },
+        dosage: {
+          ne: "बिहान खाना/खाजा खानु भन्दा ३० मिनेट अघि १ चक्की खाने।",
+          en: "Take 1 tablet in the morning 30 minutes before meals."
+        },
+        schedule: { morning: "१ चक्की", afternoon: "-", evening: "-", night: "-" },
+        currentPrice: "रु ९० / १० वटा",
+        genericPrice: "Pantoprazole = रु ४५ / १० वटा",
+        savings: "५०% बचत (Save 50%)",
+        warning: {
+          ne: "सधैं बिहान खाली पेटमा मनतातो पानीसँग निल्नुहोस्। चबाउनु हुँदैन।",
+          en: "Always take on an empty stomach in the morning with water. Do not chew."
+        }
+      },
+      amlodipine: {
+        name: "Amlodipine 5mg",
+        generic: "Amlodipine Besylate",
+        purpose: {
+          ne: "उच्च रक्तचाप (ब्लड प्रेसर) नियन्त्रण गर्न र मुटुको रक्षा गर्न।",
+          en: "Used to lower high blood pressure and protect cardiac health."
+        },
+        dosage: {
+          ne: "दिनको १ पटक तोकिएको समयमा (बिहान वा राति) खाने।",
+          en: "Take 1 tablet daily at a fixed time (morning or night)."
+        },
+        schedule: { morning: "१ चक्की", afternoon: "-", evening: "-", night: "-" },
+        currentPrice: "रु ५० / १० वटा",
+        genericPrice: "Amlodipine = रु २८ / १० वटा",
+        savings: "४४% बचत (Save 44%)",
+        warning: {
+          ne: "डाक्टरको सल्लाह बिना अचानक यो औषधि खान छोड्नु हुँदैन।",
+          en: "Do not stop taking this medication suddenly without doctor advice."
+        }
+      }
+    };
+
+    const pharmacyDB = {
+      kathmandu: [
+        { name: "Sajha Swasthya Sewa", loc: "Maharajgunj, Kathmandu", phone: "+977 01-4410000", open: "24/7 Open" },
+        { name: "Bir Hospital Pharmacy", loc: "Kanti Path, Kathmandu", phone: "+977 01-4221119", open: "24/7 Open" }
+      ],
+      lalitpur: [
+        { name: "Patan Hospital Pharmacy", loc: "Lagankhel, Lalitpur", phone: "+977 01-5522295", open: "24/7 Open" },
+        { name: "Alka Pharmacy", loc: "Jawalakhel, Lalitpur", phone: "+977 01-5555555", open: "7:00 AM - 10:00 PM" }
+      ],
+      pokhara: [
+        { name: "Gandaki Hospital Pharmacy", loc: "Ramghat, Pokhara", phone: "+977 061-520067", open: "24/7 Open" },
+        { name: "Fishtail Pharmacy", loc: "Gairapatan, Pokhara", phone: "+977 061-532100", open: "8:00 AM - 9:00 PM" }
+      ],
+      bharatpur: [
+        { name: "Chitwan Medical College Pharmacy", loc: "Bharatpur-10, Chitwan", phone: "+977 056-532933", open: "24/7 Open" },
+        { name: "Narayani Community Pharmacy", loc: "Chaubiskothi, Bharatpur", phone: "+977 056-520100", open: "24/7 Open" }
+      ]
+    };
+
+    let activeMedicine = medicineDB.cetam;
+
+    // -------------------------------------------------------------
+    // 3. UI LOGIC & TRANSLATION TOGGLE
+    // -------------------------------------------------------------
+    function toggleLanguage() {
+      currentLang = currentLang === 'ne' ? 'en' : 'ne';
+      document.getElementById('langLabel').innerText = currentLang === 'ne' ? 'English' : 'नेपाली';
+      
+      for (const [key, value] of Object.entries(translations[currentLang])) {
+        const el = document.getElementById(key);
+        if (el) el.innerText = value;
+      }
+
+      renderMedicineDetails(activeMedicine);
+      filterPharmacies();
+    }
+
+    function loadMedicine(key) {
+      if (medicineDB[key]) {
+        activeMedicine = medicineDB[key];
+        renderMedicineDetails(activeMedicine);
+        const sec = document.getElementById('resultsSection');
+        sec.classList.remove('hidden');
+        sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function renderMedicineDetails(med) {
+      document.getElementById('resMedicineName').innerText = med.name;
+      document.getElementById('resGenericName').innerText = `Generic: ${med.generic}`;
+      document.getElementById('resPurpose').innerText = med.purpose[currentLang];
+      document.getElementById('resDosage').innerText = med.dosage[currentLang];
+      document.getElementById('resWarning').innerText = med.warning[currentLang];
+      
+      document.getElementById('valMorning').innerText = med.schedule.morning;
+      document.getElementById('valAfternoon').innerText = med.schedule.afternoon;
+      document.getElementById('valEvening').innerText = med.schedule.evening;
+      document.getElementById('valNight').innerText = med.schedule.night;
+
+      document.getElementById('resCurrentPrice').innerText = `${med.name} = ${med.currentPrice}`;
+      document.getElementById('resGenericPrice').innerText = med.genericPrice;
+      document.getElementById('resSavingsPercent').innerText = med.savings;
+    }
+
+    function searchByName() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      if (q.includes('pant') || q.includes('gastr')) loadMedicine('pantocid');
+      else if (q.includes('amlo') || q.includes('press')) loadMedicine('amlodipine');
+      else loadMedicine('cetam');
+    }
+
+    // -------------------------------------------------------------
+    // 4. WEBCAM STREAM & SCANNER SIMULATION
+    // -------------------------------------------------------------
+    let mediaStream = null;
+
+    async function openCameraModal() {
+      document.getElementById('cameraModal').classList.remove('hidden');
+      const video = document.getElementById('webcamVideo');
+      const fallback = document.getElementById('camFallbackUI');
+
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        video.srcObject = mediaStream;
+        video.classList.remove('hidden');
+        fallback.classList.add('hidden');
+      } catch (err) {
+        // Fallback if camera access is denied or unavailable
+        video.classList.add('hidden');
+        fallback.classList.remove('hidden');
+      }
+    }
+
+    function closeCameraModal() {
+      document.getElementById('cameraModal').classList.add('hidden');
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+    }
+
+    function simulateScan(medKey) {
+      closeCameraModal();
+      loadMedicine(medKey);
+    }
+
+    function handleFileUpload(e) {
+      if (e.target.files && e.target.files[0]) {
+        loadMedicine('cetam');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 5. PILL IDENTIFIER WIZARD
+    // -------------------------------------------------------------
+    function identifyPill() {
+      const shape = document.getElementById('pillShape').value;
+      if (shape === 'capsule') loadMedicine('pantocid');
+      else loadMedicine('cetam');
+    }
+
+    // -------------------------------------------------------------
+    // 6. PHARMACY LIST RENDERER
+    // -------------------------------------------------------------
+    function filterPharmacies() {
+      const city = document.getElementById('cityFilter').value;
+      const list = pharmacyDB[city] || pharmacyDB.kathmandu;
+      const container = document.getElementById('pharmacyList');
+
+      container.innerHTML = list.map(p => `
+        <div class="bg-slate-50 border-2 border-slate-200 p-4 rounded-2xl flex items-center justify-between">
+          <div>
+            <h4 class="font-bold text-lg text-slate-900">${p.name}</h4>
+            <p class="text-sm text-slate-600"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>${p.loc}</p>
+            <span class="inline-block bg-green-100 text-green-800 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1">${p.open}</span>
+          </div>
+          <a href="tel:${p.phone}" class="bg-brand-600 hover:bg-brand-700 text-white p-3 rounded-xl text-lg font-bold">
+            <i class="fa-solid fa-phone"></i>
+          </a>
+        </div>
+      `).join('');
+    }
+
+    // -------------------------------------------------------------
+    // 7. SPEECH SYNTHESIS (VOICE ASSISTANT)
+    // -------------------------------------------------------------
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = currentLang === 'ne' ? 'ne-NP' : 'en-US';
+        utterance.rate = 0.85; // Senior-friendly slower pitch
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function speakPageInfo() {
+      const text = currentLang === 'ne' 
+        ? "औषधी म्याचमा स्वागत छ। औषधीको फोटो खिच्नुहोस् वा नाम खोज्नुहोस् र प्रयोग गर्ने तरिका सुन्नुहोस्।"
+        : "Welcome to AushadhiMatch. Scan your medicine photo or search by name to listen to dosage instructions.";
+      speakText(text);
+    }
+
+    function speakMedicineDetails() {
+      const text = currentLang === 'ne'
+        ? `${activeMedicine.name}। प्रयोग: ${activeMedicine.purpose.ne}। डोज: ${activeMedicine.dosage.ne}`
+        : `${activeMedicine.name}. Purpose: ${activeMedicine.purpose.en}. Dosage: ${activeMedicine.dosage.en}`;
+      speakText(text);
+    }
+
+    // Initialize application state
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMedicineDetails(activeMedicine);
+      filterPharmacies();
+    });
+  </script>
+</body>
+</html>
